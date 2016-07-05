@@ -110,7 +110,10 @@ client = ProxyClient()
 default_client_class = 'opbeat.contrib.django.DjangoClient'
 
 
-def get_client_class(client_path=default_client_class):
+def get_client_class(client_path=None):
+    if client_path is None:
+        config = getattr(django_settings, 'OPBEAT', {})
+        client_path = config.get('CLIENT', default_client_class)
     module, class_name = client_path.rsplit('.', 1)
     return getattr(__import__(module, {}, {}, class_name), class_name)
 
