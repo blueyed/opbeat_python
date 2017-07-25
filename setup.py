@@ -64,7 +64,6 @@ tests_require = [
     'pytest-capturelog>=0.7',
     'blinker>=1.1',
     'celery',
-    'django-celery',
     'Flask>=0.8',
     'logbook',
     'mock',

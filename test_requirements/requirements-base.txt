@@ -22,7 +22,7 @@ argparse
 billiard
 blinker>=1.1
 boto3
-celery<4
+celery
 greenlet
 itsdangerous
 kombu<4
