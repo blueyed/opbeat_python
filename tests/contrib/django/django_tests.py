@@ -518,7 +518,11 @@ class DjangoClientTest(TestCase):
         self.assertTrue('http' in event)
         http = event['http']
         self.assertEquals(http['method'], 'POST')
-        self.assertEquals(http['data'], '<unavailable>')
+        if django.VERSION >= (1, 7):
+            expected_exception = 'RawPostDataException'
+        else:
+            expected_exception = 'Exception'
+        self.assertEquals(http['data'], "<unavailable ({0}: You cannot access body after reading from request's data stream)>".format(expected_exception))
 
     def test_post_data(self):
         request = WSGIRequest(environ={
@@ -619,7 +623,11 @@ class DjangoClientTest(TestCase):
         self.assertTrue('http' in event)
         http = event['http']
         self.assertEquals(http['method'], 'POST')
-        self.assertEquals(http['data'], '<unavailable>')
+        if django.VERSION >= (1, 7):
+            expected_exception = 'RawPostDataException'
+        else:
+            expected_exception = 'Exception'
+        self.assertEquals(http['data'], "<unavailable ({0}: You cannot access body after reading from request's data stream)>".format(expected_exception))
         self.assertTrue('headers' in http)
         headers = http['headers']
         self.assertTrue('Content-Type' in headers, headers.keys())

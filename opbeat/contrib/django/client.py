@@ -106,15 +106,16 @@ class DjangoClient(Client):
 
         if request.method != 'GET':
             try:
-                if hasattr(request, 'body'):
+                try:
                     # Django 1.4+
                     raw_data = request.body
-                else:
+                except AttributeError:
                     raw_data = request.raw_post_data
                 data = raw_data if raw_data else request.POST
-            except Exception:
+            except Exception as exc:
                 # assume we had a partial read:
-                data = '<unavailable>'
+                data = '<unavailable ({0}: {1})>'.format(
+                    exc.__class__.__name__, exc)
         else:
             data = None
 
