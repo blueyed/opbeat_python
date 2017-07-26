@@ -16,7 +16,6 @@ Logbook
 MarkupSafe
 WebOb
 Werkzeug
-amqp==1.4.9
 anyjson
 argparse
 billiard
@@ -24,7 +23,6 @@ blinker>=1.1
 boto3
 greenlet
 itsdangerous
-kombu<4
 mock
 msgpack-python
 pep8
