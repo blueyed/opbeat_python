@@ -108,6 +108,9 @@ class DjangoClient(Client):
             try:
                 try:
                     # Django 1.4+
+                    # NOTE: on Python 2.7 `hasattr(request, 'body')` returns
+                    # False, while it might throw the exception from Django in
+                    # Python 3.
                     raw_data = request.body
                 except AttributeError:
                     raw_data = request.raw_post_data
