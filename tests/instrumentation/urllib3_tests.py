@@ -17,8 +17,10 @@ except ImportError:
     import SimpleHTTPServer
     from SocketServer import TCPServer
 
+
 class MyTCPServer(TCPServer):
     allow_reuse_address = True
+
 
 class InstrumentUrllib3Test(TestCase):
     def setUp(self):
@@ -49,7 +51,7 @@ class InstrumentUrllib3Test(TestCase):
             pool = urllib3.PoolManager(timeout=0.1)
 
             url = 'http://localhost:{0}/hello_world'.format(self.port)
-            r = pool.request('GET', url)
+            pool.request('GET', url)
 
         self.client.end_transaction("MyView")
 

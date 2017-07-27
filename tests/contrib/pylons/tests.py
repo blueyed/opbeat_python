@@ -19,4 +19,4 @@ class MiddlewareTest(TestCase):
             'opbeat.app_id': 'p' * 32,
             'opbeat.secret_token': 'a' * 32,
         }
-        middleware = Opbeat(self.app, config)
+        Opbeat(self.app, config)

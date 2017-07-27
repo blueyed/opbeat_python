@@ -209,6 +209,7 @@ def test_multi_statement_sql():
 
     assert "CREATE TABLE" == actual
 
+
 @pytest.mark.skipif(travis_and_psycopg2,
                     reason="Requires postgres server. Only runs on travisci.")
 def test_psycopg2_register_type(postgres_connection):

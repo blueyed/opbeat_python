@@ -5,8 +5,7 @@ from urllib3.exceptions import MaxRetryError, TimeoutError
 from urllib3_mock import Responses
 
 from opbeat.transport.base import TransportException
-from opbeat.transport.http_urllib3 import (AsyncUrllib3Transport,
-                                           Urllib3Transport)
+from opbeat.transport.http_urllib3 import Urllib3Transport
 
 try:
     import urlparse
@@ -14,8 +13,8 @@ except ImportError:
     from urllib import parse as urlparse
 
 
-
 responses = Responses('urllib3')
+
 
 @responses.activate
 def test_send():
@@ -52,9 +51,7 @@ def test_http_error():
 
 @responses.activate
 def test_generic_error():
-    url, status, message, body = (
-        'http://localhost:9999', 418, "I'm a teapot", 'Nothing'
-    )
+    url, status = 'http://localhost:9999', 418
     transport = Urllib3Transport(urlparse.urlparse(url))
     responses.add('POST', '/', status=status, body=Exception('Oopsie'))
     with pytest.raises(TransportException) as exc_info:

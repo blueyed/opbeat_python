@@ -13,22 +13,20 @@ from tests.utils.compat import TestCase
 zerorpc = pytest.importorskip("zerorpc")
 gevent = pytest.importorskip("gevent")
 
-
-
-has_unsupported_pypy = (hasattr(sys, 'pypy_version_info')
-                        and sys.pypy_version_info < (2, 6))
+has_unsupported_pypy = (hasattr(sys, 'pypy_version_info') and
+                        sys.pypy_version_info < (2, 6))
 
 
 class ZeroRPCTest(TestCase):
     def setUp(self):
         self._socket_dir = tempfile.mkdtemp(prefix='opbeatzerorpcunittest')
         self._server_endpoint = 'ipc://{0}'.format(os.path.join(
-                    self._socket_dir, 'random_zeroserver'
+            self._socket_dir, 'random_zeroserver'
         ))
 
         self._opbeat = get_tempstoreclient()
         zerorpc.Context.get_instance().register_middleware(OpbeatMiddleware(
-                    client=self._opbeat
+            client=self._opbeat
         ))
 
     @pytest.mark.skipif(has_unsupported_pypy, reason='Failure with pypy < 2.6')

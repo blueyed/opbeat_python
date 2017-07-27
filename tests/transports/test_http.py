@@ -46,9 +46,7 @@ class TestHttpFailures(TestCase):
 
     @mock.patch('opbeat.transport.http.urlopen')
     def test_generic_error(self, mock_urlopen):
-        url, status, message, body = (
-            'http://localhost:9999', 418, "I'm a teapot", 'Nothing'
-        )
+        url = 'http://localhost:9999'
         transport = HTTPTransport(urlparse.urlparse(url))
         mock_urlopen.side_effect = Exception('Oopsie')
         with pytest.raises(TransportException) as exc_info:

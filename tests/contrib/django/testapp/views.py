@@ -51,8 +51,8 @@ def render_template_view(request):
         with trace("something_expensive", "code"):
             return [User(username='Ron'), User(username='Beni')]
 
-    return render(request, "list_users.html",
-                            {'users': something_expensive})
+    return render(request, "list_users.html", {
+        'users': something_expensive})
 
 
 def render_jinja2_template(request):

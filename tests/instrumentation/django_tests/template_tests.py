@@ -39,7 +39,7 @@ class TracesTest(TestCase):
     def test_template_rendering(self, should_collect):
         should_collect.return_value = False
         with self.settings(MIDDLEWARE_CLASSES=[
-            'opbeat.contrib.django.middleware.OpbeatAPMMiddleware']):
+                'opbeat.contrib.django.middleware.OpbeatAPMMiddleware']):
             self.client.get(reverse('render-heavy-template'))
             self.client.get(reverse('render-heavy-template'))
             self.client.get(reverse('render-heavy-template'))
@@ -84,8 +84,7 @@ class TracesTest(TestCase):
         should_collect.return_value = False
         with self.settings(MIDDLEWARE_CLASSES=[
                 'opbeat.contrib.django.middleware.OpbeatAPMMiddleware'],
-                TEMPLATES=TEMPLATES
-            ):
+                TEMPLATES=TEMPLATES):
             self.client.get(reverse('render-jinja2-template'))
             self.client.get(reverse('render-jinja2-template'))
             self.client.get(reverse('render-jinja2-template'))

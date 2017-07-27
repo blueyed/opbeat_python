@@ -104,7 +104,7 @@ class DjangoClientTest(TestCase):
 
         self.assertEquals(event['message'], 'foo')
         self.assertEquals(event['level'], 'error')
-        self.assertEquals(event['param_message'], {'message':'foo','params':()})
+        self.assertEquals(event['param_message'], {'message': 'foo', 'params': ()})
         self.assertEquals(type(event['timestamp']), datetime.datetime)
 
     def test_signal_integration(self):
@@ -394,7 +394,7 @@ class DjangoClientTest(TestCase):
         self.assertEquals(len(self.opbeat.events), 1)
         event = self.opbeat.events.pop(0)
 
-        self.assertEquals(event['param_message'], {'message': 'test','params':()})
+        self.assertEquals(event['param_message'], {'message': 'test', 'params': ()})
 
     def test_404_middleware(self):
         with self.settings(MIDDLEWARE_CLASSES=['opbeat.contrib.django.middleware.Opbeat404CatchMiddleware']):
@@ -790,7 +790,7 @@ class DjangoClientTest(TestCase):
                 'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
             ],
         ):
-            response = self.client.get('/redirect/me/')
+            self.client.get('/redirect/me/')
 
         timed_requests, _traces = self.opbeat.instrumentation_store.get_all()
         timing = timed_requests[0]
@@ -821,7 +821,7 @@ class DjangoClientTest(TestCase):
                 'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
             ],
         ):
-            response = self.client.get('/redirect/me/')
+            self.client.get('/redirect/me/')
 
         timed_requests, _traces = self.opbeat.instrumentation_store.get_all()
         timing = timed_requests[0]
@@ -1095,7 +1095,7 @@ def test_stacktrace_filtered_for_opbeat():
             "opbeat.traces.RequestsStore.should_collect") as should_collect:
         should_collect.return_value = False
         with override_settings(MIDDLEWARE_CLASSES=[
-            'opbeat.contrib.django.middleware.OpbeatAPMMiddleware']):
+                'opbeat.contrib.django.middleware.OpbeatAPMMiddleware']):
             resp = client.get(reverse("render-heavy-template"))
     assert resp.status_code == 200
 
@@ -1122,7 +1122,7 @@ def test_perf_template_render(benchmark):
     with mock.patch("opbeat.traces.RequestsStore.should_collect") as should_collect:
         should_collect.return_value = False
         with override_settings(MIDDLEWARE_CLASSES=[
-            'opbeat.contrib.django.middleware.OpbeatAPMMiddleware']):
+                'opbeat.contrib.django.middleware.OpbeatAPMMiddleware']):
             resp = benchmark(client_get, client, reverse("render-heavy-template"))
     assert resp.status_code == 200
 
@@ -1162,7 +1162,7 @@ def test_perf_database_render(benchmark):
         should_collect.return_value = False
 
         with override_settings(MIDDLEWARE_CLASSES=[
-            'opbeat.contrib.django.middleware.OpbeatAPMMiddleware']):
+                'opbeat.contrib.django.middleware.OpbeatAPMMiddleware']):
             resp = benchmark(client_get, client, reverse("render-user-template"))
         assert resp.status_code == 200
 
@@ -1202,8 +1202,7 @@ def test_perf_transaction_with_collection(benchmark):
         client = _TestClient()
 
         with override_settings(MIDDLEWARE_CLASSES=[
-            'opbeat.contrib.django.middleware.OpbeatAPMMiddleware']):
-
+                'opbeat.contrib.django.middleware.OpbeatAPMMiddleware']):
             for i in range(10):
                 resp = client_get(client, reverse("render-user-template"))
                 assert resp.status_code == 200

@@ -135,10 +135,10 @@ class InstrumentPyMongoTest(TestCase):
         for i in range(1000):
             blogposts.append({'author': 'Tom', 'comments': i})
         self.db.blogposts.insert(blogposts)
-        r = self.db.blogposts.insert(blogpost)
+        self.db.blogposts.insert(blogpost)
         self.client.instrumentation_store.get_all()
         self.client.begin_transaction('transaction.test')
-        r = list(self.db.blogposts.find({'comments': {'$gt': 995}}))
+        self.db.blogposts.find({'comments': {'$gt': 995}})
 
         self.client.end_transaction('transaction.test')
         transactions, traces = self.client.instrumentation_store.get_all()
@@ -198,7 +198,7 @@ class InstrumentPyMongoTest(TestCase):
         r = self.db.blogposts.insert(blogpost)
         self.client.begin_transaction('transaction.test')
         r = self.db.blogposts.update_one({'author': 'Tom'},
-                                     {'$set': {'author': 'Jerry'}})
+                                         {'$set': {'author': 'Jerry'}})
         self.assertEqual(r.modified_count, 1)
         self.client.end_transaction('transaction.test')
         transactions, traces = self.client.instrumentation_store.get_all()
@@ -214,7 +214,7 @@ class InstrumentPyMongoTest(TestCase):
         r = self.db.blogposts.insert(blogpost)
         self.client.begin_transaction('transaction.test')
         r = self.db.blogposts.update_many({'author': 'Tom'},
-                                     {'$set': {'author': 'Jerry'}})
+                                          {'$set': {'author': 'Jerry'}})
         self.assertEqual(r.modified_count, 1)
         self.client.end_transaction('transaction.test')
         transactions, traces = self.client.instrumentation_store.get_all()

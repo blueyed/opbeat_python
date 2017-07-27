@@ -7,6 +7,7 @@ import pytest
 pytestmark = pytest.mark.skipif(sys.version_info < (3, 5),
                                 reason='python3.5+ requried for asyncio')
 
+
 @pytest.fixture
 def mock_client(mocker):
     mock_client = mocker.MagicMock()
@@ -17,7 +18,6 @@ def mock_client(mocker):
         return mock_client.body
 
     response.read = read
-
 
     class fake_post:
         async def __aenter__(self, *args, **kwargs):
@@ -33,7 +33,6 @@ def mock_client(mocker):
         def __init__(self, *args, **kwargs):
             mock_client.args = args
             mock_client.kwargs = kwargs
-
 
     mock_client.post = mocker.Mock(side_effect=fake_post)
     return mock_client

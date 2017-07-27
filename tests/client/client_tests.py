@@ -232,7 +232,6 @@ class ClientTest(TestCase):
     @mock.patch('opbeat.base.time.time')
     def test_send(self, time, send_remote):
         time.return_value = 1328055286.51
-        public = "public"
         access_token = "secret"
         client = Client(
             servers=['http://example.com'],
@@ -451,7 +450,7 @@ class ClientTest(TestCase):
     def test_long_culprit(self):
         culprit = 'c' * 101
 
-        self.client.capture('Message', message='test', data={'culprit':culprit})
+        self.client.capture('Message', message='test', data={'culprit': culprit})
 
         self.assertEquals(len(self.client.events), 1)
         event = self.client.events.pop(0)
@@ -460,7 +459,7 @@ class ClientTest(TestCase):
     def test_long_logger(self):
         logger = 'c' * 61
 
-        self.client.capture('Message', message='test', data={'logger':logger})
+        self.client.capture('Message', message='test', data={'logger': logger})
 
         self.assertEquals(len(self.client.events), 1)
         event = self.client.events.pop(0)
