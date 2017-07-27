@@ -389,6 +389,12 @@ class ClientTest(TestCase):
         self.assertFalse('stacktrace' in event)
         self.assertTrue('timestamp' in event)
 
+    @mock.patch('opbeat.base.Client.decode', side_effect=Exception('boom!'))
+    def test_get_log_message_exception(self, decode):
+        message = self.client._get_log_message(0)
+        self.assertEquals(message, "<failed decoding data (Exception: boom!)>")
+        decode.assert_called_once_with(0)
+
     # def test_stack_explicit_frames(self):
     #     def bar():
     #         return inspect.stack()

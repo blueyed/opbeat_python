@@ -418,8 +418,9 @@ class Client(object):
         # decode message so we can show the actual event
         try:
             data = self.decode(data)
-        except Exception:
-            message = '<failed decoding data>'
+        except Exception as exc:
+            message = '<failed decoding data ({0}: {1})>'.format(
+                exc.__class__.__name__, exc)
         else:
             message = data.pop('message', '<no message value>')
         return message
