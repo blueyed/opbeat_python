@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest  # isort:skip
 
-django = pytest.importorskip("django")  # isort:skip
+django = pytest.importorskip("django")  # noqa: E402 isort:skip
 
 import datetime
 import logging
@@ -21,6 +21,7 @@ from django.template import TemplateSyntaxError
 from django.test import TestCase
 from django.test.client import Client as _TestClient
 from django.test.client import ClientHandler as _TestClientHandler
+from django.test.client import FakePayload
 from django.test.utils import override_settings
 
 import mock
@@ -522,7 +523,8 @@ class DjangoClientTest(TestCase):
             expected_exception = 'RawPostDataException'
         else:
             expected_exception = 'Exception'
-        self.assertEquals(http['data'], "<unavailable ({0}: You cannot access body after reading from request's data stream)>".format(expected_exception))
+        self.assertEquals(http['data'], "<unavailable ({0}: You cannot access body after reading from request's data stream)>\nrequest.POST: {1}".format(expected_exception, request.POST))
+        self.assertEquals(request.POST, {})
 
     def test_post_data(self):
         request = WSGIRequest(environ={
@@ -602,7 +604,7 @@ class DjangoClientTest(TestCase):
         self.assertEqual(event['http']['url'], None)
 
     # This test only applies to Django 1.3+
-    def test_request_capture(self):
+    def test_request_capture_partial_read(self):
         if django.VERSION[:2] < (1, 3):
             return
         request = WSGIRequest(environ={
@@ -627,11 +629,58 @@ class DjangoClientTest(TestCase):
             expected_exception = 'RawPostDataException'
         else:
             expected_exception = 'Exception'
-        self.assertEquals(http['data'], "<unavailable ({0}: You cannot access body after reading from request's data stream)>".format(expected_exception))
+        self.assertEquals(http['data'], "<unavailable ({0}: You cannot access body after reading from request's data stream)>\nrequest.POST: {1}".format(expected_exception, request.POST))
+        # self.assertEquals(http['data'], '{}')
         self.assertTrue('headers' in http)
         headers = http['headers']
         self.assertTrue('Content-Type' in headers, headers.keys())
         self.assertEquals(headers['Content-Type'], 'text/html')
+        env = http['env']
+        self.assertTrue('SERVER_NAME' in env, env.keys())
+        self.assertEquals(env['SERVER_NAME'], 'testserver')
+        self.assertTrue('SERVER_PORT' in env, env.keys())
+        self.assertEquals(env['SERVER_PORT'], '80')
+
+    def test_request_capture_multipart_formdata(self):
+        if django.VERSION[:2] < (1, 3):
+            return
+
+        payload = FakePayload("\r\n".join([
+            '--boundary',
+            'Content-Disposition: form-data; name="name"',
+            '',
+            'value',
+            '--boundary--'
+            '']))
+        request = WSGIRequest({
+            'REQUEST_METHOD': 'POST',
+            'SERVER_NAME': 'testserver',
+            'SERVER_PORT': '80',
+            'CONTENT_TYPE': 'multipart/form-data; boundary=boundary',
+            'CONTENT_LENGTH': 78,
+            'wsgi.input': payload})
+
+        # Read POST data to trigger exception when accessing request.body.
+        self.assertEqual(request.POST, {'name': ['value']})
+
+        self.opbeat.capture('Message', message='foo', request=request)
+
+        self.assertEquals(len(self.opbeat.events), 1)
+        event = self.opbeat.events.pop(0)
+
+        self.assertTrue('http' in event)
+        http = event['http']
+        self.assertEquals(http['method'], 'POST')
+        if django.VERSION >= (1, 7):
+            expected_exception = 'RawPostDataException'
+        else:
+            expected_exception = 'Exception'
+        self.assertEquals(http['data'], "<unavailable ({0}: You cannot access body after reading from request's data stream)>\nrequest.POST: {1}".format(expected_exception, request.POST))
+        # self.assertEquals(http['data'], '{}')
+        self.assertTrue('headers' in http)
+        headers = http['headers']
+        self.assertTrue('Content-Type' in headers, headers.keys())
+        self.assertEquals(headers['Content-Type'], 'multipart/form-data; boundary=boundary')
         env = http['env']
         self.assertTrue('SERVER_NAME' in env, env.keys())
         self.assertEquals(env['SERVER_NAME'], 'testserver')

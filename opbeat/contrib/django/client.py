@@ -116,9 +116,9 @@ class DjangoClient(Client):
                     raw_data = request.raw_post_data
                 data = raw_data if raw_data else request.POST
             except Exception as exc:
-                # assume we had a partial read:
-                data = '<unavailable ({0}: {1})>'.format(
-                    exc.__class__.__name__, exc)
+                # Assume we had a partial read, or multipart/form-data:
+                data = '<unavailable ({0}: {1})>\nrequest.POST: {2}'.format(
+                    exc.__class__.__name__, exc, request.POST)
         else:
             data = None
 
