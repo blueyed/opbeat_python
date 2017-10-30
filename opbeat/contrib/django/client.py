@@ -164,8 +164,9 @@ class DjangoClient(Client):
         if is_http_request:
             data.update(self.get_data_from_request(request))
 
-        if kwargs.get('exc_info'):
-            exc_value = kwargs['exc_info'][1]
+        exc_info = kwargs.get('exc_info')
+        if exc_info:
+            exc_value = exc_info[1]
             # As of r16833 (Django) all exceptions may contain a ``django_template_source`` attribute (rather than the
             # legacy ``TemplateSyntaxError.source`` check) which describes template information.
             if hasattr(exc_value, 'django_template_source') or ((isinstance(exc_value, TemplateSyntaxError) and
