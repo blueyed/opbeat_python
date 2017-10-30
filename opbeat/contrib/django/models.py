@@ -207,7 +207,11 @@ def register_handlers():
     got_request_exception.connect(opbeat_exception_handler)
 
     # If Celery is installed, register a signal handler
-    if 'djcelery' in django_settings.INSTALLED_APPS:
+    try:
+        from celery import signals  # noqa: F401
+    except ImportError:
+        pass
+    else:
         from opbeat.contrib.celery import register_signal
 
         try:
